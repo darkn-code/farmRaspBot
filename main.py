@@ -36,7 +36,7 @@ def moverMotor(motor,angulo):
             motorPos1 = motorPos1 - 5
             if motorPos1 < 0 :
                 motorPos1 = 0
-            pwm.setRotationAngle(0,motorPos1)
+            pwm.setRotationAngle(1,motorPos1)
     else:
         if angulo:
             motorPos0 = motorPos0 + 5
@@ -49,7 +49,7 @@ def moverMotor(motor,angulo):
                 motorPos0 = 0
             pwm.setRotationAngle(0,motorPos0)
     print(motorPos1)
-    print(motrPos2)
+    print(motorPos0)
     pwm.exit_PCA9685()
 
 def Camara():
@@ -139,10 +139,10 @@ if  __name__ == '__main__':
     Izq = Button(leftBodyBot,image=IflechaIzq,bg=fondo)
     Der = Button(leftBodyBot,image=IflechaDer,bg=fondo)
 
-    Arriba.configure(command=lambda: moverMotor(False,True))
-    Abajo.configure(command=lambda: moverMotor(False,False))
-    Izq.configure(command=lambda: moverMotor(True,False))
-    Der.configure(command=lambda: moverMotor(True,True))
+    Arriba.configure(command=lambda: moverMotor(False,False))
+    Abajo.configure(command=lambda: moverMotor(False,True))
+    Izq.configure(command=lambda: moverMotor(True,True))
+    Der.configure(command=lambda: moverMotor(True,False))
     
     Arriba.grid(row=0,column=1,padx=5,pady=5)
     Izq.grid(row=1,column=0,padx=5,pady=5)
