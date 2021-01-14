@@ -52,7 +52,7 @@ if  __name__ == '__main__':
 
     root = Tk()
     root.resizable(0,0)
-    root.iconbitmap(path.format('chile-habanero.ico'))
+    #root.iconbitmap(path.format('chile-habanero.ico'))
     root.title('Proyecto Chile Habanero')
     root.configure(bg=fondo)
 
