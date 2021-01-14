@@ -5,6 +5,8 @@ from threading import Thread
 import cv2
 from PIL import Image
 from PIL import ImageTk
+from PCA9685 import PCA9685
+from arduino import arduino
 
 
 camera = cv2.VideoCapture(0)
@@ -15,12 +17,37 @@ encenderCamara = None
 apagarCamara = None
 Icamara = None
 fondo = '#203500'
-letraRojo = 'red'
-letraBlanca = 'white'
-from PCA9685 import PCA9685
 
 motorPos1 = 100
 motorPos0 = 170
+isRun = True
+
+def conectar():
+    global port, Invernadero
+    try:
+        Invernadero = arduino(port)
+        thread = Thread(target=leerDatos)
+        thread.start()
+    except:
+        print('No se puede conectar')
+
+def EncenderYApagarLuz():
+    global Invernadero
+    Invernadero.enviarDatos('B')
+    print('Luz')
+
+def leerDatos():
+    global isRun,Invernadero
+    time.sleep(1.0)
+    Invernadero.reinicarBuffer()
+    while isRun:
+        arduinoString = Invernadero.recibirDatos()
+        data = np.fromstring(arduinoString.decode('ascii', errors='replace'),sep=',')
+        hum = data[0]
+        humeadString.set('Humedad = {} %'.format(hum))
+        temp = data[1]
+        tempString.set('Temperatura = {} ºC'.format(temp))
+        
 
 def moverMotor(motor,angulo):
     global motorPos0,motorPos1
@@ -90,6 +117,8 @@ if  __name__ == '__main__':
     #root.iconbitmap(path.format('chile-habanero.ico'))
     root.title('Proyecto Chile Habanero')
     root.configure(bg=fondo)
+    
+    port = StringVar(root)
 
     header = Frame(root,bg=fondo)
     body = Frame(root,bg=fondo)
@@ -158,14 +187,19 @@ if  __name__ == '__main__':
     
     
     #footer
+    humeadString = StringVar(root,'Humedad = 0.00 %')
+    tempString = StringVar(root,'Temperatura = 0.00 ºC')
+
     Arduino = Button(footer,text='Conectar',bg=fondo,width=20)
-    Puerto = Entry(footer,font=('Helvetica', 15, 'bold'),width=20)
+    Puerto = Entry(footer,textvariable=port,font=('Helvetica', 15, 'bold'),width=20)
     Luz = Button(footer,text='LUZ',bg=fondo,width=20)
     GuadrarDatos = Button(footer,text='Guadar Datos',bg=fondo,width=20)
-    Humedad = Label(footer,text='Humedad: 0.0 %',bg=fondo,width=20,anchor='w')
-    Temperatura = Label(footer,text='Temperatura: 0.0 °C',bg=fondo,width=20,anchor='w')
+    Humedad = Label(footer,textvariable=humeadString,bg=fondo,width=20,anchor='w')
+    Temperatura = Label(footer,textvariable=tempString,bg=fondo,width=20,anchor='w')
 
     Puerto.insert(END,'/dev/ttyUSB0')
+    Arduino.configure(command=conectar)
+
     ponerSubTitulo(Humedad)
     ponerSubTitulo(Arduino)
     ponerSubTitulo(Luz)
@@ -181,4 +215,5 @@ if  __name__ == '__main__':
 
 
     root.mainloop()
+    isRun = False
     camera.release()
