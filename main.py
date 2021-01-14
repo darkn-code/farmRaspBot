@@ -21,8 +21,7 @@ fondo = '#203500'
 motorPos1 = 100
 motorPos0 = 170
 isRun = True
-hum = None
-temp = None
+isSaving = False
 log_path = "/home/pi/Desktop/"
 
 def write_log(text):
@@ -32,21 +31,12 @@ def write_log(text):
     log.close()
 
 def guardarDatos():
-    global GuadrarDatos,hum,temp
+    global GuadrarDatos,isSaving
     if GuadrarDatos['fg'] == 'white':
         GuadrarDatos.configure(fg='red')
-        try:
-            if hum is not None and temp is not None:
-                write_log("DHT Sensor - Temperatura: %s" % str(temp))
-                print("DHT Sensor - Temperatura: %s" % str(temp))
-                write_log("DHT Sensor - Humedad: %s" % str(hum))
-                print("DHT Sensor - Humedad: %s" % str(hum))
-            else:
-                write_log('Error al obtener la lectura del sensor')
-        except RuntimeError as error:
-            print(error.args[0])
-        time.sleep(600)
+        isSaving = True
     else:
+        isSaving = False
         GuadrarDatos.configure(fg='white')
 
 def conectar():
@@ -67,7 +57,7 @@ def EncenderYApagarLuz():
     print('Luz')
 
 def leerDatos():
-    global isRun,Invernadero,hum,temp
+    global isRun,Invernadero
     time.sleep(1.0)
     Invernadero.reinicarBuffer()
     while isRun:
@@ -81,6 +71,22 @@ def leerDatos():
         except:
             print('cerrando')
             Invernadero.arduino.close()
+        if isSaving:
+            try:
+                if hum is not None and temp is not None:
+                    write_log("DHT Sensor - Temperatura: %s" % str(temp))
+                    print("DHT Sensor - Temperatura: %s" % str(temp))
+                    write_log("DHT Sensor - Humedad: %s" % str(hum))
+                    print("DHT Sensor - Humedad: %s" % str(hum))
+                else:
+                    write_log('Error al obtener la lectura del sensor')
+            except RuntimeError as error:
+                print(error.args[0])
+            for i=0 in range(120):
+                if isSaving:
+                    time.sleep(5)
+                else:
+                    break
 
 def moverMotor(motor,angulo):
     global motorPos0,motorPos1
