@@ -89,8 +89,6 @@ if  __name__ == '__main__':
     root.title('Proyecto Chile Habanero')
     root.configure(bg=fondo)
 
-    print(xx)
-
     header = Frame(root,bg=fondo)
     body = Frame(root,bg=fondo)
     leftBody = Frame(body,bg=fondo)
