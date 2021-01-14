@@ -6,6 +6,7 @@ import cv2
 from PIL import Image
 from PIL import ImageTk
 
+
 camera = cv2.VideoCapture(0)
 panel = None
 root = None
@@ -16,7 +17,40 @@ Icamara = None
 fondo = '#203500'
 letraRojo = 'red'
 letraBlanca = 'white'
+from PCA9685 import PCA9685
 
+motorPos1 = 100
+motorPos0 = 50
+
+def moverMotor(motor,angulo):
+    global motorPos0,motorPos1
+    pwm = PCA9685()
+    pwm.setPWMFreq(50)
+    if motor:
+        if angulo:
+            motorPos1 = motorPos1 + 5
+            if motorPos1 > 180: 
+                motorPos1 = 180
+            pwm.setRotationAngle(1,motorPos1)
+        else:
+            motorPos1 = motorPos1 - 5
+            if motorPos1 < 0 :
+                motorPos1 = 0
+            pwm.setRotationAngle(0,motorPos1)
+    else:
+        if angulo:
+            motorPos0 = motorPos0 + 5
+            if motorPos0 > 180: 
+                motorPos0 = 180
+            pwm.setRotationAngle(0,motorPos0)
+        else:
+            motorPos0 = motorPos0 - 5
+            if motorPos0 < 0 :
+                motorPos0 = 0
+            pwm.setRotationAngle(0,motorPos0)
+    print(motorPos1)
+    print(motrPos2)
+    pwm.exit_PCA9685()
 
 def Camara():
     _,frame = camera.read()
@@ -49,12 +83,13 @@ def ponerSubTitulo(label):
 
     
 if  __name__ == '__main__':
-
     root = Tk()
     root.resizable(0,0)
     root.iconbitmap(path.format('chile-habanero.ico'))
     root.title('Proyecto Chile Habanero')
     root.configure(bg=fondo)
+
+    print(xx)
 
     header = Frame(root,bg=fondo)
     body = Frame(root,bg=fondo)
@@ -106,6 +141,11 @@ if  __name__ == '__main__':
     Izq = Button(leftBodyBot,image=IflechaIzq,bg=fondo)
     Der = Button(leftBodyBot,image=IflechaDer,bg=fondo)
 
+    Arriba.configure(command=lambda: moverMotor(False,True))
+    Abajo.configure(command=lambda: moverMotor(False,False))
+    Izq.configure(command=lambda: moverMotor(True,False))
+    Der.configure(command=lambda: moverMotor(True,True))
+    
     Arriba.grid(row=0,column=1,padx=5,pady=5)
     Izq.grid(row=1,column=0,padx=5,pady=5)
     Abajo.grid(row=1,column=1,padx=5,pady=5)
@@ -125,7 +165,7 @@ if  __name__ == '__main__':
     Humedad = Label(footer,text='Humedad: 0.0 %',bg=fondo,width=20,anchor='w')
     Temperatura = Label(footer,text='Temperatura: 0.0 °C',bg=fondo,width=20,anchor='w')
 
-    Puerto.insert(END,'hola mundo')
+    Puerto.insert(END,'/dev/ttyUSB0')
     ponerSubTitulo(Humedad)
     ponerSubTitulo(Arduino)
     ponerSubTitulo(Luz)
