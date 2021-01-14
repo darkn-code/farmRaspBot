@@ -23,7 +23,8 @@ motorPos0 = 170
 isRun = True
 
 def conectar():
-    global port, Invernadero
+    global port, Invernadero,thread
+    print(port)
     try:
         Invernadero = arduino(port)
         thread = Thread(target=leerDatos)
@@ -33,7 +34,7 @@ def conectar():
 
 def EncenderYApagarLuz():
     global Invernadero
-    Invernadero.enviarDatos('B')
+    Invernadero.enviarDatos('A')
     print('Luz')
 
 def leerDatos():
@@ -43,9 +44,9 @@ def leerDatos():
     while isRun:
         arduinoString = Invernadero.recibirDatos()
         data = np.fromstring(arduinoString.decode('ascii', errors='replace'),sep=',')
-        hum = data[0]
-        humeadString.set('Humedad = {} %'.format(hum))
-        temp = data[1]
+        hum = data[1]
+        humeadString.set('Humedad    =    {} %'.format(hum))
+        temp = data[0]
         tempString.set('Temperatura = {} ºC'.format(temp))
         
 
@@ -118,7 +119,7 @@ if  __name__ == '__main__':
     root.title('Proyecto Chile Habanero')
     root.configure(bg=fondo)
     
-    port = StringVar(root)
+    port = ''
 
     header = Frame(root,bg=fondo)
     body = Frame(root,bg=fondo)
@@ -187,18 +188,20 @@ if  __name__ == '__main__':
     
     
     #footer
-    humeadString = StringVar(root,'Humedad = 0.00 %')
+    humeadString = StringVar(root,'Humedad   =   0.00 %')
     tempString = StringVar(root,'Temperatura = 0.00 ºC')
 
     Arduino = Button(footer,text='Conectar',bg=fondo,width=20)
-    Puerto = Entry(footer,textvariable=port,font=('Helvetica', 15, 'bold'),width=20)
+    Puerto = Entry(footer,font=('Helvetica', 15, 'bold'),width=20)
     Luz = Button(footer,text='LUZ',bg=fondo,width=20)
     GuadrarDatos = Button(footer,text='Guadar Datos',bg=fondo,width=20)
     Humedad = Label(footer,textvariable=humeadString,bg=fondo,width=20,anchor='w')
     Temperatura = Label(footer,textvariable=tempString,bg=fondo,width=20,anchor='w')
 
     Puerto.insert(END,'/dev/ttyUSB0')
+    port = Puerto.get()
     Arduino.configure(command=conectar)
+    Luz.configure(command=EncenderYApagarLuz)
 
     ponerSubTitulo(Humedad)
     ponerSubTitulo(Arduino)
@@ -216,4 +219,8 @@ if  __name__ == '__main__':
 
     root.mainloop()
     isRun = False
+    time.sleep(5.0)
+    global Invernadero,thread
+    thread.join()
+    Invernadero.arduino.close()
     camera.release()
