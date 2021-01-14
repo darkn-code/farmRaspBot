@@ -20,7 +20,7 @@ letraBlanca = 'white'
 from PCA9685 import PCA9685
 
 motorPos1 = 100
-motorPos0 = 50
+motorPos0 = 170
 
 def moverMotor(motor,angulo):
     global motorPos0,motorPos1
@@ -50,6 +50,8 @@ def moverMotor(motor,angulo):
             pwm.setRotationAngle(0,motorPos0)
     print(motorPos1)
     print(motorPos0)
+
+    time.sleep(0.1)
     pwm.exit_PCA9685()
 
 def Camara():
@@ -65,7 +67,7 @@ def Camara():
     else:
         panel.configure(image=Icamara)
         panel.image = Icamara
-        
+
 def ApagarCamara():
     encenderCamara.configure(state=NORMAL)
     apagarCamara.configure(state=DISABLED)
