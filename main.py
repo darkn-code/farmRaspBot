@@ -45,10 +45,13 @@ def leerDatos():
         arduinoString = Invernadero.recibirDatos()
         data = np.fromstring(arduinoString.decode('ascii', errors='replace'),sep=',')
         hum = data[1]
-        humeadString.set('Humedad    =    {} %'.format(hum))
         temp = data[0]
-        tempString.set('Temperatura = {} ºC'.format(temp))
-        
+        try:
+            humeadString.set('Humedad    =    {} %'.format(hum))
+            tempString.set('Temperatura = {} ºC'.format(temp))
+        except:
+            print('cerrando')
+            Invernadero.arduino.close()
 
 def moverMotor(motor,angulo):
     global motorPos0,motorPos1
@@ -220,7 +223,4 @@ if  __name__ == '__main__':
     root.mainloop()
     isRun = False
     time.sleep(5.0)
-    global Invernadero,thread
-    thread.join()
-    Invernadero.arduino.close()
     camera.release()
