@@ -21,7 +21,8 @@ fondo = '#203500'
 motorPos1 = 100
 motorPos0 = 170
 isRun = True
-
+hum = None
+temp = None
 log_path = "/home/pi/Desktop/"
 
 def write_log(text):
@@ -35,7 +36,7 @@ def guardarDatos():
     if GuadrarDatos['fg'] == 'white':
         GuadrarDatos.configure(fg='red')
         try:
-            if hum is not None and temp os not None:
+            if hum is not None and temp is not None:
                 write_log("DHT Sensor - Temperatura: %s" % str(temp))
                 print("DHT Sensor - Temperatura: %s" % str(temp))
                 write_log("DHT Sensor - Humedad: %s" % str(hum))
@@ -43,10 +44,10 @@ def guardarDatos():
             else:
                 write_log('Error al obtener la lectura del sensor')
         except RuntimeError as error:
-            print(error.args[0]
+            print(error.args[0])
         time.sleep(600)
     else:
-        GuadrarDatos.configre(fg='white')
+        GuadrarDatos.configure(fg='white')
 
 def conectar():
     global port,Puerto,Invernadero,thread,Arduino
@@ -66,7 +67,7 @@ def EncenderYApagarLuz():
     print('Luz')
 
 def leerDatos():
-    global isRun,Invernadero
+    global isRun,Invernadero,hum,temp
     time.sleep(1.0)
     Invernadero.reinicarBuffer()
     while isRun:
@@ -233,6 +234,7 @@ if  __name__ == '__main__':
     port = Puerto.get()
     Arduino.configure(command=conectar)
     Luz.configure(command=EncenderYApagarLuz)
+    GuadrarDatos.configure(command=guardarDatos)
 
     ponerSubTitulo(Humedad)
     ponerSubTitulo(Arduino)
