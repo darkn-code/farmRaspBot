@@ -7,7 +7,7 @@ from PIL import Image
 from PIL import ImageTk
 from PCA9685 import PCA9685
 from arduino import arduino
-
+import datetime
 
 camera = cv2.VideoCapture(0)
 panel = None
@@ -22,13 +22,41 @@ motorPos1 = 100
 motorPos0 = 170
 isRun = True
 
+log_path = "/home/pi/Desktop/"
+
+def write_log(text):
+    log = open(log_path + datetime.datetime.now().strftime("%Y-%m-%d") + "_dht.log","a")
+    line = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " " + text + "\n"
+    log.write(line)
+    log.close()
+
+def guardarDatos():
+    global GuadrarDatos,hum,temp
+    if GuadrarDatos['fg'] == 'white':
+        GuadrarDatos.configure(fg='red')
+        try:
+            if hum is not None and temp os not None:
+                write_log("DHT Sensor - Temperatura: %s" % str(temp))
+                print("DHT Sensor - Temperatura: %s" % str(temp))
+                write_log("DHT Sensor - Humedad: %s" % str(hum))
+                print("DHT Sensor - Humedad: %s" % str(hum))
+            else:
+                write_log('Error al obtener la lectura del sensor')
+        except RuntimeError as error:
+            print(error.args[0]
+        time.sleep(600)
+    else:
+        GuadrarDatos.configre(fg='white')
+
 def conectar():
-    global port, Invernadero,thread
+    global port,Puerto,Invernadero,thread,Arduino
     print(port)
     try:
         Invernadero = arduino(port)
         thread = Thread(target=leerDatos)
         thread.start()
+        Arduino.configure(state=DISABLED)
+        Puerto.configure(state=DISABLED)
     except:
         print('No se puede conectar')
 
