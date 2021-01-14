@@ -82,7 +82,7 @@ def leerDatos():
                     write_log('Error al obtener la lectura del sensor')
             except RuntimeError as error:
                 print(error.args[0])
-            for i=0 in range(120):
+            for i in range(120):
                 if isSaving:
                     time.sleep(5)
                 else:
